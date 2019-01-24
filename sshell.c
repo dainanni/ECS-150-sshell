@@ -154,7 +154,7 @@ int main(int argc, char *argv[])
 	char buffer[512];
 	fgets(buffer, 512, stdin);
 
-	/*
+	/*Tester Script
      	* Echoes command line to stdout if fgets read from a file and not
      	* the terminal (which is the case with the test script)
      	*/
@@ -271,9 +271,7 @@ int main(int argc, char *argv[])
 	}
 
 
-//	builtInCmd(cmd, flag); //Checks for phase four shell built in commands
 
-//	int retval = forkExecWait(cmd);// Retrieving return value for exit status 
 	int retval, status;
 
 	if(!builtInCmd(cmd, flag, &status)) //Check if built in shell command was invoked
