@@ -15,7 +15,7 @@ int redirection(char*cmd[16], char*file, int redir)
 {
 	int fileDesc;
 
-        if(redir == 1)
+        if(redir == 1) //Input Redirection check
         {
 		fileDesc = open(file, O_RDONLY);
                 //if((fileDesc = open(file, O_RDONLY)) <0) //Opens file and file descriptor for read
@@ -26,13 +26,14 @@ int redirection(char*cmd[16], char*file, int redir)
 
         }
 
-	else if(redir == 0)
+	else if(redir == 0) //Output Redirection check
 	{
-                if((fileDesc = open(file, O_WRONLY |  O_CREAT)) <0) //Opens file and file descriptor for write
-                {
-                        fprintf(stderr, "Error: cannot open output file\n"); //Output file command error message
-                        exit(1);
-                }
+		fileDesc = open(file, O_WRONLY |  O_CREAT, 0666);
+               // if((fileDesc = open(file, O_WRONLY |  O_CREAT, 0666)) <0) //Opens file and file descriptor for write
+               // {
+               //         fprintf(stderr, "Error: cannot open output file\n"); //Output file command error message
+               //         //exit(1);
+               // }
 
 	}
 
@@ -64,16 +65,18 @@ int forkExecWait(char*cmd[16],char*file, int redir)
 		//	int fileDesc;
 	       	//	fileDesc = redirection(cmd, file, redir); //Creates file desc and checks for errors
 			dup2(fileD, 0); //Duplicates file desc and redirects input from stdin to fileDesc
+			close(fileD); //Closes file descriptor opened for redirection
 		}	
 
 		else if(redir == 0)
 		{
 		//	int fileDesc;
                 //       fileDesc = redirection(cmd, file, redir); //Creates file desc and checks for errors
-                        dup2(fileD, 1); //Duplicates file desc and redirects input from stdin to fileDesc
+                        dup2(fileD, 1); //Duplicates file desc and redirects output from stdout to fileDesc
+			close(fileD); //Closes file descriptor opened for redirection
 		}
 
-                execvp(cmd[0], &cmd[0]);
+                execvp(cmd[0], cmd);
 		
 		//Executes the error statement only if execvp fails
                 fprintf(stderr, "Error: command not found\n"); //Exec command error message
@@ -87,7 +90,7 @@ int forkExecWait(char*cmd[16],char*file, int redir)
         }
         else
 	{
-                perror("fork");
+              //  perror("fork");
                 exit(1);
         }
 
@@ -190,9 +193,11 @@ int main(int argc, char *argv[])
 			
 			else if(buffer[n-1] == '<')
 				continue;
-			
-			else if(redir == 1 || redir == 0)
-				redir = -1; //resets redirection mode
+
+			else if(buffer[n-1] == '>')
+				continue;
+		//	else if(redir == 1 || redir == 0)
+		//		redir = -1; //resets redirection mode
 
 			else
 			{
@@ -284,7 +289,7 @@ int main(int argc, char *argv[])
 		fprintf(stderr, "+ completed '%s' [%d]\n", buffer, status);
 
 	flag = 0;
-
+	redir = -1;
 	}//Loops indefinitely unless system failure
 
 
