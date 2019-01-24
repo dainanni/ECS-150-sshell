@@ -17,7 +17,7 @@ int redirection(char*cmd[16], char*file, int redir)
 
         if(redir == 1) //Input Redirection check
         {
-		fileDesc = open(file, O_RDONLY);
+		fileDesc = open(file, O_RDONLY, 0666);
                 //if((fileDesc = open(file, O_RDONLY)) <0) //Opens file and file descriptor for read
                 //{
                 //        fprintf(stderr, "Error: cannot open input file\n"); //Input file command error message
@@ -55,7 +55,6 @@ int forkExecWait(char*cmd[16],char*file, int redir)
 	procID = fork();
 	
 	
-
         if(procID == 0)
 	{
 		//CHILD PROCESS
@@ -287,6 +286,8 @@ int main(int argc, char *argv[])
 
 	else
 		fprintf(stderr, "+ completed '%s' [%d]\n", buffer, status);
+	
+	//Resetting flags
 
 	flag = 0;
 	redir = -1;
